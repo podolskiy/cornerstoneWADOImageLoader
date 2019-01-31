@@ -5,10 +5,10 @@ import createImage from '../createImage.js';
 /**
  * Helper method to extract the transfer-syntax from the response of the server.
  * @param {string} contentType The value of the content-type header as returned by the WADO-RS server.
- * @return The transfer-syntax as announced by the server, or Implicit Little Endian by default.
+ * @return The transfer-syntax as announced by the server, or JPEG-LS Lossless by default.
  */
 export function getTransferSyntaxForContentType (contentType) {
-  const defaultTransferSyntax = '1.2.840.10008.1.2'; // Default is Implicit Little Endian.
+  const defaultTransferSyntax = '1.2.840.10008.1.2.4.80'; // Default is JPEG-LS Lossless.
 
   if (!contentType) {
     return defaultTransferSyntax;
@@ -35,11 +35,11 @@ export function getTransferSyntaxForContentType (contentType) {
   // in the content type.
   // http://dicom.nema.org/medical/dicom/current/output/chtml/part18/chapter_6.html#table_6.1.1.8-3b
   const defaultTransferSyntaxByType = {
-    'image/jpeg': '1.2.840.10008.1.2.4.70',
-    'image/x-dicom-rle': '1.2.840.10008.1.2.5',
-    'image/x-jls': '1.2.840.10008.1.2.4.80',
-    'image/jp2': '1.2.840.10008.1.2.4.90',
-    'image/jpx': '1.2.840.10008.1.2.4.92'
+    'image/dicom+jpeg': '1.2.840.10008.1.2.4.70',
+    'image/dicom+rle': '1.2.840.10008.1.2.5',
+    'image/dicom+jpeg-ls': '1.2.840.10008.1.2.4.80',
+    'image/dicom+jp2': '1.2.840.10008.1.2.4.90',
+    'image/dicom+jpx': '1.2.840.10008.1.2.4.92'
   };
 
   if (params['transfer-syntax']) {
@@ -69,7 +69,7 @@ function loadImage (imageId, options) {
     }
 
     // TODO: load bulk data items that we might need
-    const mediaType = 'multipart/related; type="application/octet-stream"'; // 'image/dicom+jp2';
+    const mediaType = 'multipart/related; type=image/dicom+jpeg-ls';
 
     // get the pixel data from the server
     getPixelData(uri, imageId, mediaType).then((result) => {

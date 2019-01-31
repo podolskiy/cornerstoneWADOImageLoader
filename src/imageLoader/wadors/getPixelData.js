@@ -11,7 +11,7 @@ function findBoundary (header) {
 
 function findContentType (header) {
   for (let i = 0; i < header.length; i++) {
-    if (header[i].substr(0, 13) === 'Content-Type:') {
+    if (header[i].substr(0, 13).toUpperCase() === 'Content-Type:'.toUpperCase()) {
       return header[i].substr(13).trim();
     }
   }
@@ -29,7 +29,7 @@ function uint8ArrayToString (data, offset, length) {
   return str;
 }
 
-function getPixelData (uri, imageId, mediaType = 'application/octet-stream') {
+function getPixelData (uri, imageId, mediaType = 'multipart/related; type=image/dicom+jpeg-ls') {
   const headers = {
     accept: mediaType
   };
