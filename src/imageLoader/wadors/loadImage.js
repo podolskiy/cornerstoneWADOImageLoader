@@ -1,3 +1,4 @@
+import external from '../externalModules.js';
 import metaDataManager from './metaDataManager.js';
 import getPixelData from './getPixelData.js';
 import createImage from '../createImage.js';
@@ -7,7 +8,7 @@ import createImage from '../createImage.js';
  * @param {string} contentType The value of the content-type header as returned by the WADO-RS server.
  * @return The transfer-syntax as announced by the server, or JPEG-LS Lossless by default.
  */
-export function getTransferSyntaxForContentType (contentType) {
+export function getTransferSyntaxForContentType(contentType) {
   const defaultTransferSyntax = '1.2.840.10008.1.2.4.80'; // Default is JPEG-LS Lossless.
 
   if (!contentType) {
@@ -54,10 +55,10 @@ export function getTransferSyntaxForContentType (contentType) {
   return defaultTransferSyntax;
 }
 
-function loadImage (imageId, options) {
+function loadImage(imageId, options) {
   const start = new Date().getTime();
   const uri = imageId.substring(7);
-
+  const { cornerstone } = external;
   const promise = new Promise((resolve, reject) => {
     // check to make sure we have metadata for this imageId
     const metaData = metaDataManager.get(imageId);
@@ -73,7 +74,8 @@ function loadImage (imageId, options) {
 
     // get the pixel data from the server
     getPixelData(uri, imageId, mediaType).then((result) => {
-      const transferSyntax = getTransferSyntaxForContentType(result.contentType);
+      const instance = cornerstone.metaData.get('instance', imageId)
+      const transferSyntax = (instance && instance.TransferSyntaxUID) || getTransferSyntaxForContentType(result.contentType);
       const pixelData = result.imageFrame.pixelData;
       const imagePromise = createImage(imageId, pixelData, transferSyntax, options);
 
